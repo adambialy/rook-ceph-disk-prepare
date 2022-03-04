@@ -1,0 +1,16 @@
+---
+
+disk_geometry:
+  - pnumber: "1"
+    pstart: "0%"
+    pend: "32GiB"
+    fs: "0"
+  - pnumber: "2"
+    pstart: "32GiB"
+    pend: "64GiB"
+    fs: "0"
+  - pnumber: "3"
+    pstart: "64GiB"
+    pend: "100%"
+    fs: "83"
+    mounted: "/var/lib/rancher"

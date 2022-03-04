@@ -1,0 +1,6 @@
+---
+
+devices:
+  - device: "sdb"
+  - device: "sdc"
+

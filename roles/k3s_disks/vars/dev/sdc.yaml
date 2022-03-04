@@ -1,0 +1,11 @@
+---
+
+disk_geometry:
+  - pnumber: "1"
+    pstart: "0%"
+    pend: "512GiB"
+    fs: "0"
+  - pnumber: "2"
+    pstart: "512GiB"
+    pend: "1024GiB"
+    fs: "0"

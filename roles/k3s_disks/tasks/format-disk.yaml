@@ -1,0 +1,81 @@
+---
+
+- name: include
+  include_vars:
+    file: "{{ role_path }}/vars/{{ k3s_env }}/{{ item.device }}.yaml"
+
+- set_fact: 
+    pdevice: "{{ item.device }}"
+
+- name: umount rancher
+  ansible.posix.mount:
+    path: "{{ item.mounted }}"
+    state: absent
+  with_items:
+    - "{{ disk_geometry }}"
+  when: (item.mounted is defined) and (item.mounted|length > 0)
+
+  # optional disk cleanup
+  # - name: cleanup disks
+  #   shell: sfdisk --delete /dev/{{ pdevice }} 
+
+# prepare partitions
+
+- name: Create partitions
+  community.general.parted:
+    device: "/dev/{{ pdevice }}"
+    number: "{{ item.pnumber }}"
+    state: present
+    part_start: "{{ item.pstart }}"
+    part_end: "{{ item.pend }}"
+  with_items:
+    - "{{ disk_geometry }}"
+
+# I need to use fdisk as parted doesnt support unsetting filesystem
+
+- name: set partition fs id
+  shell: echo -e 'p\nt\n{{ item.pnumber }}\n{{ item.fs }}\nw' | fdisk /dev/{{ pdevice }} 
+  with_items:
+    - "{{ disk_geometry }}"
+
+      #- name: Create a ext4 filesystem {{ device }}3
+      #  filesystem:
+      #    fstype: ext4
+      #    dev: "{{ pdevice }}3"
+      
+- name: grab disk configuration
+  shell: fdisk -l /dev/{{ pdevice }} 
+  register: fdiskout
+
+- name: display disk config
+  debug: msg={{ fdiskout.stdout.split('\n') }}
+
+- name: remove var lib rancher
+  ansible.builtin.file:
+    path: "{{ item.mounted }}"
+    state: absent
+  with_items:
+    - "{{ disk_geometry }}"
+  when: (item.mounted is defined) and (item.mounted|length > 0)
+
+- name: create mount point
+  ansible.builtin.file:
+    path: "{{ item.mounted }}"
+    state: directory
+  with_items:
+    - "{{ disk_geometry }}"
+  when: (item.mounted is defined) and (item.mounted|length > 0)
+
+- name: Mount up var-lib-rancher
+  ansible.posix.mount:
+    path: "{{ item.mounted }}"
+    src: "/dev/{{ pdevice }}{{ item.pnumber }}" 
+    fstype: ext4
+    opts: defaults,noatime 
+    state: mounted
+    boot: yes
+  with_items:
+    - "{{ disk_geometry }}"
+  when: (item.mounted is defined) and (item.mounted|length > 0)
+
+

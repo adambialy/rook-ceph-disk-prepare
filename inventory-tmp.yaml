@@ -1,0 +1,59 @@
+k3s_cluster:
+  vars: 
+    k3s_env: tmp
+    ansible_python_interpreter: /usr/bin/python3
+    cluster_domain: k3s.home.org
+    internal_cluster_domain: int.k3s.home.org
+    metallb_addresses: 192.168.1.97-192.168.1.99
+    rook_cluster_config: values-tmp.yaml
+# for only one controller node, ansible-playbook needs: -e "k3s_use_unsupported_config=yes"
+  hosts:
+    k3s-tmp-01:
+      ansible_user: root
+      ansible_host: 192.168.1.91
+      k3s_control_node: true
+      k3s_etcd_datastore: true
+      k3s_agent:
+        node-ip: 192.168.1.91
+      ceph_node: false
+      reconfigure_disks: false
+      ceph_storage: true
+      # workers
+    k3s-tmp-02:
+      ansible_user: root
+      ansible_host: 192.168.1.92
+      k3s_control_node: false
+      k3s_etcd_datastore: false
+      k3s_agent:
+        node-ip: 192.168.1.92
+      ceph_node: true
+      ceph_storage: true
+      reconfigure_disks: false
+    k3s-tmp-03:
+      ansible_user: root
+      ansible_host: 192.168.1.93
+      k3s_control_node: false
+      k3s_etcd_datastore: false
+      k3s_agent:
+        node-ip: 192.168.1.93
+      ceph_node: true
+      ceph_storage: true
+      reconfigure_disks: false
+    k3s-tmp-04:
+      ansible_user: root
+      ansible_host: 192.168.1.94
+      k3s_control_node: true
+      k3s_agent:
+        node-ip: 192.168.1.94
+      ceph_node: true
+      ceph_storage: true
+      reconfigure_disks: false
+    k3s-tmp-05:
+      ansible_user: root
+      ansible_host: 192.168.1.95
+      k3s_control_node: false
+      k3s_agent:
+        node-ip: 192.168.1.95
+      ceph_node: true
+      ceph_storage: true
+      reconfigure_disks: false

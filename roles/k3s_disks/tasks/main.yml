@@ -1,0 +1,20 @@
+---
+# tasks file for disks
+
+- name: warning msg
+  pause:
+    prompt: Please confirm you want to destroy all data on disks configured in {{ role_path }}/vars/{{ k3s_env }}/main.yaml If you are not sure - Ctrl+c and then "a" to abort.
+
+- name: include variables - see k3s_env variable in inventory file
+  include_vars:
+    file: "{{ role_path }}/vars/{{ k3s_env }}/main.yaml"
+
+- name: task
+  include_tasks: format-disk.yaml
+  when:
+    - reconfigure_disks
+    - ceph_storage
+  with_items:
+    - "{{ devices }}"
+
+ 
