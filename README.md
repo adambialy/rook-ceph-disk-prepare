@@ -10,9 +10,9 @@ To successfully run the role two things need to be done:
 
 
 ## TODO
-move devices (sda, sdb etc) into inventory file
-modify role to get different disk configs for different nodes
-add lvm support
+  - move devices (sda, sdb etc) into inventory file
+  - modify role to get different disk configs for different nodes
+  - add lvm support
 
-add rook-ceph role
-add jinja for values.yaml for rook-ceph deploy
+  - add rook-ceph role
+  - add jinja for values.yaml for rook-ceph deploy
